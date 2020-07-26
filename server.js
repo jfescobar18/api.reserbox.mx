@@ -38,14 +38,11 @@ app.use(bodyParser.json({ limit: "10mb", extended: true }))
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(bodyParser.json());
 
-var CompanyController = require("./Controller/CompanyController")();
-app.use("/company", CompanyController);
+let AuthenticationController = require("./Controllers/AuthenticationController")();
+app.use("/auth", AuthenticationController);
 
-var UserController = require("./Controller/UserController")();
-app.use("/user", UserController);
-
-app.get("/", function (request, response) {
-    response.json({ "Message": "Welcome to Reserbox API" });
+app.get("/", function (req, res) {
+    res.json({ "Message": "Welcome to Reserbox API" });
 });
 
 try {
