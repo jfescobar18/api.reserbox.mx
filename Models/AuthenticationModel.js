@@ -1,52 +1,21 @@
 const db = require("../Sequelize/database");
 const HttpCodes = require("../Utils/HttpCodes");
 const ResponseCodes = require("../Utils/ResponseCodes");
+const { response } = require("express");
 
 exports.singUp = async function (req, res) {
     try {
-        let user = await db.Users.findAll({
-            where: {
-                UserEmail: {
-                    [db.Op.eq]: req.body.UserEmail
-                }
-            }
-        });
+        let user = await getUserByEmail(req.body.UserEmail).catch(error => { throw error });
 
         if (user.length === 0) {
-            const user = db.Users.build({
-                UserId: null,
-                UserFirstName: req.body.UserFirstName,
-                UserLastName: req.body.UserLastName,
-                UserEmail: req.body.UserEmail,
-                UserPhone: req.body.UserPhone,
-                UserTypeId: req.body.UserTypeId,
-                LastModified: null
-            });
-            await user.save();
-
-            res.status(HttpCodes.OK).jsonp({
-                "Message": "User Saved",
-                "Status": {
-                    name: "UserInserted",
-                    code: ResponseCodes.UserInserted
-                }
-            });
+            return await addUser(req.body, res).catch(error => { throw error });
         }
         else {
-            res.status(HttpCodes.OK).jsonp({
-                "Message": "Email in use",
-                "Status": {
-                    name: "NotUserInserted",
-                    code: ResponseCodes.NotUserInserted
-                }
-            });
+            return returnResponse(HttpCodes.UNAUTHORIZED, res, "Email in use", ResponseCodes.UserNotInserted);
         }
     }
     catch (error) {
-        res.status(HttpCodes.BAD_REQUEST).jsonp({
-            "Message": "Error",
-            "Status": error
-        });
+        return returnResponse((HttpCodes.BAD_REQUEST, "Error", res, error));
     }
 }
 
@@ -60,4 +29,46 @@ exports.login = async function (req, res) {
 exports.test = async function (req, res) {
     console.log("test called");
     db.UserTypes.findAll().then(UserTypes => res.json(UserTypes));
+}
+
+async function getUserByEmail(UserEmail) {
+    try {
+        return await db.Users.findAll({
+            where: {
+                UserEmail: {
+                    [db.Op.eq]: UserEmail
+                }
+            }
+        });
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
+async function addUser(userParams, res) {
+    try {
+        const user = db.Users.build({
+            UserId: null,
+            UserFirstName: userParams.UserFirstName,
+            UserLastName: userParams.UserLastName,
+            UserEmail: userParams.UserEmail,
+            UserPhone: userParams.UserPhone,
+            UserTypeId: userParams.UserTypeId,
+            LastModified: null
+        });
+
+        await user.save();
+        return returnResponse(HttpCodes.OK, res, "User Saved", ResponseCodes.UserInserted);
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
+async function returnResponse(HttpCode, res, message, status) {
+    return res.status(HttpCode).jsonp({
+        "Message": message,
+        "Status": status
+    });
 }

@@ -1,6 +1,6 @@
 var ResponseCodes = {}
 
-ResponseCodes.UserInserted = 1;
-ResponseCodes.NotUserInserted = 2;
+ResponseCodes.UserInserted = { name: "UserInserted", code: 1 };
+ResponseCodes.UserNotInserted = { name: "UserNotInserted", code: 2 };
 
 module.exports = ResponseCodes;
