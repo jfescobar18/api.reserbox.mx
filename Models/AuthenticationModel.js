@@ -1,7 +1,6 @@
 const db = require("../Sequelize/database");
 const HttpCodes = require("../Utils/HttpCodes");
 const ResponseCodes = require("../Utils/ResponseCodes");
-const { response } = require("express");
 
 exports.singUp = async function (req, res) {
     try {
