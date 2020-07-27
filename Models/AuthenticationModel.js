@@ -1,6 +1,9 @@
 const db = require("../Sequelize/database");
 const HttpCodes = require("../Utils/HttpCodes");
 const ResponseCodes = require("../Utils/ResponseCodes");
+const GenericResponse = require("../Controllers/GenericResponse");
+const TokenService = require("../Utils/TokenService");
+const Cryptography = require("../Utils/Cryptography");
 
 exports.singUp = async function (req, res) {
     try {
@@ -10,24 +13,28 @@ exports.singUp = async function (req, res) {
             return await addUser(req.body, res).catch(error => { throw error });
         }
         else {
-            return returnResponse(HttpCodes.UNAUTHORIZED, res, "Email in use", ResponseCodes.UserNotInserted);
+            return GenericResponse.send(HttpCodes.UNAUTHORIZED, res, ResponseCodes.UserNotInserted, null);
         }
     }
     catch (error) {
-        return returnResponse((HttpCodes.BAD_REQUEST, "Error", res, error));
+        return GenericResponse.send(HttpCodes.BAD_REQUEST, res, error, null);
     }
 }
 
 exports.login = async function (req, res) {
-    console.log("login called");
-    console.log(req.body);
+    try {
+        let user = await getUserByEmail(req.body.UserEmail).catch(error => { throw error });
 
-    res.status(200).jsonp({ "Message": "Ok" });
-}
-
-exports.test = async function (req, res) {
-    console.log("test called");
-    db.UserTypes.findAll().then(UserTypes => res.json(UserTypes));
+        if (user.length > 0 && await Cryptography.comparePassword(req.body.UserPassword, user[0].dataValues.UserPassword)) {
+            return GenericResponse.send(HttpCodes.OK, res, ResponseCodes.AuthenticatedUser, TokenService.createToken(user));
+        }
+        else {
+            return GenericResponse.send(HttpCodes.UNAUTHORIZED, res, ResponseCodes.InvalidCredentials, null);
+        }
+    }
+    catch (error) {
+        return GenericResponse.send(HttpCodes.BAD_REQUEST, res, error, null);
+    }
 }
 
 async function getUserByEmail(UserEmail) {
@@ -52,22 +59,16 @@ async function addUser(userParams, res) {
             UserFirstName: userParams.UserFirstName,
             UserLastName: userParams.UserLastName,
             UserEmail: userParams.UserEmail,
+            UserPassword: await Cryptography.cryptPassword(userParams.UserPassword),
             UserPhone: userParams.UserPhone,
             UserTypeId: userParams.UserTypeId,
             LastModified: null
         });
 
         await user.save();
-        return returnResponse(HttpCodes.OK, res, "User Saved", ResponseCodes.UserInserted);
+        return GenericResponse.send(HttpCodes.OK, res, ResponseCodes.UserInserted, TokenService.createToken(user));
     }
     catch (error) {
         throw error;
     }
-}
-
-async function returnResponse(HttpCode, res, message, status) {
-    return res.status(HttpCode).jsonp({
-        "Message": message,
-        "Status": status
-    });
 }

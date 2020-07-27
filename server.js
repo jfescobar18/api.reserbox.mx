@@ -41,6 +41,9 @@ app.use(bodyParser.json());
 let AuthenticationController = require("./Controllers/AuthenticationController")();
 app.use("/auth", AuthenticationController);
 
+let CompanyController = require("./Controllers/CompanyController")();
+app.use("/company", CompanyController);
+
 app.get("/", function (req, res) {
     res.json({ "Message": "Welcome to Reserbox API" });
 });

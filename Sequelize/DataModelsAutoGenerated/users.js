@@ -20,8 +20,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: false
     },
+    UserPassword: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    },
     UserPhone: {
-      type: DataTypes.STRING(15),
+      type: DataTypes.STRING(255),
       allowNull: false
     },
     UserTypeId: {
