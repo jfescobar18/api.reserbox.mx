@@ -3,11 +3,12 @@ const compression = require("compression");
 const bodyParser = require("body-parser");
 const cluster = require("cluster");
 const express = require("express");
+const config = require('./config');
 const https = require("https");
 const http = require("http");
 const cors = require("cors");
+const path = require('path');
 const fs = require("fs");
-const config = require('./config');
 
 const app = express();
 const dotenv = require("dotenv");
@@ -34,19 +35,20 @@ const options = process.env.NODE_ENV === "production" ? {
     cert: fs.readFileSync("certs/cert.pem")
 } : {};
 
-app.use(bodyParser.json({ limit: "10mb", extended: true }))
-app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+app.use(bodyParser.json({ limit: "5mb", extended: true }))
+app.use(bodyParser.urlencoded({ limit: "5mb", extended: true }));
 app.use(bodyParser.json());
-
-let AuthenticationController = require("./Controllers/AuthenticationController")();
-app.use("/auth", AuthenticationController);
-
-let CompanyController = require("./Controllers/CompanyController")();
-app.use("/company", CompanyController);
+app.use(express.static(path.join(__dirname + '/wwwroot')));
 
 app.get("/", function (req, res) {
-    res.json({ "Message": "Welcome to Reserbox API" });
+    res.sendFile(path.join(__dirname, 'wwwroot', 'index.html'));
 });
+
+const AuthenticationController = require("./Controllers/AuthenticationController")();
+app.use("/auth", AuthenticationController);
+
+const CompanyController = require("./Controllers/CompanyController")();
+app.use("/company", CompanyController);
 
 try {
     if (cluster.isMaster) {
