@@ -21,8 +21,9 @@ CREATE TABLE `Users`(
     `UserPassword` VARCHAR(255) NOT NULL,
     `UserPhone` VARCHAR(255) NOT NULL,
     `UserTypeId` INT NOT NULL,
-    `CreationDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `LastModified` datetime NULL,
+    `EmailConfirmed` BOOLEAN NOT NULL DEFAULT 0,
+    `CreationDate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `LastModified` DATETIME NULL,
     PRIMARY KEY ( `UserId` ),
     FOREIGN KEY ( `UserTypeId` ) REFERENCES `UserTypes`( `UserTypeId` )
 );

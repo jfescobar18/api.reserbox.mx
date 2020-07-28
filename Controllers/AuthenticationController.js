@@ -9,6 +9,9 @@ var routes = function () {
     router.route("/login")
         .post(Auth.login);
 
+    router.route("/confirm-email/:UserEmail/:token")
+        .get(Auth.confirmEmail);
+
     return router;
 };
 

@@ -19,3 +19,12 @@ exports.ensureAuthenticated = function (req, res, next) {
     req.user = payload.sub;
     next();
 }
+
+exports.ValidateTemporalToken = function (token) {
+    try {
+        const payload = jwt.decode(token, process.env.TOKEN);
+        return !(payload.exp <= moment().unix());
+    } catch (error) {
+        throw error;
+    }
+}

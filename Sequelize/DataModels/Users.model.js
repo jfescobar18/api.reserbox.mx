@@ -36,6 +36,11 @@ module.exports = (instance, Sequelize) => {
                 key: 'UserTypeId'
             }
         },
+        EmailConfirmed: {
+            type: Sequelize.INTEGER(1),
+            allowNull: false,
+            defaultValue: 0
+        },
         CreationDate: {
             type: Sequelize.DATE,
             allowNull: false,

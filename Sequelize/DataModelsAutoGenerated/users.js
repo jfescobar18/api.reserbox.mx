@@ -38,6 +38,11 @@ module.exports = function(sequelize, DataTypes) {
         key: 'UserTypeId'
       }
     },
+    EmailConfirmed: {
+      type: DataTypes.INTEGER(1),
+      allowNull: false,
+      defaultValue: 0
+    },
     CreationDate: {
       type: DataTypes.DATE,
       allowNull: false,
