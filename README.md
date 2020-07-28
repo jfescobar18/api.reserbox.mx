@@ -14,7 +14,7 @@ $ node server.js
 ```
 
 ENV File
-Create and .env file with the following variables
+Create and .env file in the root folder with the following variables
 
 ```sh
 NODE_ENV=development
