@@ -25,6 +25,6 @@ exports.ValidateTemporalToken = function (token) {
         const payload = jwt.decode(token, process.env.TOKEN);
         return !(payload.exp <= moment().unix());
     } catch (error) {
-        throw error;
-    }
+        throw { "error": error.message }
+    };
 }
