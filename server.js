@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cluster = require("cluster");
 const express = require("express");
 const config = require('./config');
+const dotenv = require("dotenv");
 const https = require("https");
 const http = require("http");
 const cors = require("cors");
@@ -11,7 +12,6 @@ const path = require('path');
 const fs = require("fs");
 
 const app = express();
-const dotenv = require("dotenv");
 dotenv.config();
 
 const shouldCompress = (req, res) => {
@@ -21,7 +21,6 @@ const shouldCompress = (req, res) => {
     return compression.filter(req, res);
 };
 
-app.use(compression());
 app.use(cors());
 app.options("*", cors());
 app.use(bodyParser.json());
