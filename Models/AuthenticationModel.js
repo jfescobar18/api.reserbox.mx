@@ -74,12 +74,13 @@ exports.requestNewPassword = async function (req, res) {
         let user = await getUserByEmail(req.params.UserEmail).catch(error => { throw error });
 
         if (user.length > 0) {
-            Emailer.initMailer(user[0].dataValues, EmailTypes.PASSWORD_RECOVERY)
+            const Token = TokenService.createToken(user, 2);
+            Emailer.initMailer(user[0].dataValues, EmailTypes.PASSWORD_RECOVERY, Token)
                 .then(result => {
                     let response = ResponseCodes.EmailSent;
                     response.emailId = result.messageId;
 
-                    return GenericResponse.send(HttpCodes.OK, res, response, TokenService.createToken(user, 2));
+                    return GenericResponse.send(HttpCodes.OK, res, response, Token);
                 })
                 .catch(error => {
                     console.log(error);
