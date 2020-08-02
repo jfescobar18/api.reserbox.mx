@@ -4,6 +4,8 @@ const ResponseCodes = require("../Utils/ResponseCodes");
 const GenericResponse = require("../Controllers/GenericResponse");
 const TokenService = require("../Utils/TokenService");
 const Cryptography = require("../Utils/Cryptography");
+const Emailer = require("../Utils/Emailer");
+const EmailTypes = require("../Utils/EmailTypes");
 const { ValidateTemporalToken } = require("../Utils/AuthMiddleware");
 
 exports.singUp = async function (req, res) {
@@ -61,6 +63,41 @@ exports.confirmEmail = async function (req, res) {
         else {
             return GenericResponse.send(HttpCodes.UNAUTHORIZED, res, ResponseCodes.InvalidCredentials, null);
         }
+    }
+    catch (error) {
+        return GenericResponse.send(HttpCodes.BAD_REQUEST, res, error, null);
+    }
+}
+
+exports.requestNewPassword = async function (req, res) {
+    try {
+        let user = await getUserByEmail(req.params.UserEmail).catch(error => { throw error });
+
+        if (user.length > 0) {
+            Emailer.initMailer(user[0].dataValues, EmailTypes.PASSWORD_RECOVERY)
+                .then(result => {
+                    let response = ResponseCodes.EmailSent;
+                    response.emailId = result.messageId;
+
+                    return GenericResponse.send(HttpCodes.OK, res, response, TokenService.createToken(user, 2));
+                })
+                .catch(error => {
+                    console.log(error);
+                    return GenericResponse.send(HttpCodes.UNAUTHORIZED, res, error, null);
+                });
+        }
+        else {
+            return GenericResponse.send(HttpCodes.UNAUTHORIZED, res, ResponseCodes.UserNotFound, null);
+        }
+    }
+    catch (error) {
+        return GenericResponse.send(HttpCodes.BAD_REQUEST, res, error, null);
+    }
+}
+
+exports.recoverPassword = async function (req, res) {
+    try {
+
     }
     catch (error) {
         return GenericResponse.send(HttpCodes.BAD_REQUEST, res, error, null);

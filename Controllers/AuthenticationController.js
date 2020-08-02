@@ -12,6 +12,9 @@ var routes = function () {
     router.route("/confirm-email/:UserEmail/:token")
         .get(Auth.confirmEmail);
 
+    router.route("/request-new-password/:UserEmail")
+        .get(Auth.requestNewPassword);
+
     return router;
 };
 
