@@ -12,7 +12,7 @@ exports.singUp = async function (req, res) {
     try {
         let user = await getUserByEmail(req.body.UserEmail).catch(error => { throw error });
 
-        if (user.length === 0) {
+        if (user === null) {
             return await addUser(req.body, res).catch(error => { throw error });
         }
         else {
@@ -28,7 +28,7 @@ exports.login = async function (req, res) {
     try {
         let user = await getUserByEmail(req.body.UserEmail).catch(error => { throw error });
 
-        if (user.length > 0 && await Cryptography.comparePassword(req.body.UserPassword, user[0].dataValues.UserPassword)) {
+        if (user !== null && await Cryptography.comparePassword(req.body.UserPassword, user.UserPassword)) {
             return GenericResponse.send(HttpCodes.OK, res, ResponseCodes.AuthenticatedUser, TokenService.createToken(user, 14));
         }
         else {
@@ -42,22 +42,13 @@ exports.login = async function (req, res) {
 
 exports.confirmEmail = async function (req, res) {
     try {
-        const UserEmail = req.params.UserEmail;
-        const token = req.params.token;
+        const UserEmail = req.body.UserEmail;
+        const token = req.body.token;
 
         let user = await getUserByEmail(UserEmail).catch(error => { throw error });
-        if (user.length > 0 && ValidateTemporalToken(token)) {
-            const user = await db.Users.update(
-                { EmailConfirmed: 1 },
-                {
-                    where: {
-                        UserEmail: {
-                            [db.Op.eq]: UserEmail
-                        }
-                    }
-                }
-            );
 
+        if (user !== null && ValidateTemporalToken(token)) {
+            user = await updateUser({ EmailConfirmed: 1 }, UserEmail);
             return GenericResponse.send(HttpCodes.OK, res, ResponseCodes.AuthenticatedUser, TokenService.createToken(user, 14));
         }
         else {
@@ -71,11 +62,11 @@ exports.confirmEmail = async function (req, res) {
 
 exports.requestNewPassword = async function (req, res) {
     try {
-        let user = await getUserByEmail(req.params.UserEmail).catch(error => { throw error });
+        let user = await getUserByEmail(req.body.UserEmail).catch(error => { throw error });
 
-        if (user.length > 0) {
+        if (user !== null) {
             const Token = TokenService.createToken(user, 2);
-            Emailer.initMailer(user[0].dataValues, EmailTypes.PASSWORD_RECOVERY, Token)
+            Emailer.initMailer(user, EmailTypes.PASSWORD_RECOVERY, Token)
                 .then(result => {
                     let response = ResponseCodes.EmailSent;
                     response.emailId = result.messageId;
@@ -96,9 +87,21 @@ exports.requestNewPassword = async function (req, res) {
     }
 }
 
-exports.recoverPassword = async function (req, res) {
+exports.updatePassword = async function (req, res) {
     try {
+        const UserEmail = req.body.UserEmail;
+        const UserPassword = req.body.UserPassword;
+        const token = req.body.token;
 
+        let user = await getUserByEmail(UserEmail).catch(error => { throw error });
+
+        if (user !== null && ValidateTemporalToken(token)) {
+            user = await updateUser({ UserPassword: UserPassword }, UserEmail);
+            return GenericResponse.send(HttpCodes.OK, res, ResponseCodes.PasswordUpdated, TokenService.createToken(user, 14));
+        }
+        else {
+            return GenericResponse.send(HttpCodes.UNAUTHORIZED, res, ResponseCodes.InvalidCredentials, null);
+        }
     }
     catch (error) {
         return GenericResponse.send(HttpCodes.BAD_REQUEST, res, error, null);
@@ -107,13 +110,15 @@ exports.recoverPassword = async function (req, res) {
 
 async function getUserByEmail(UserEmail) {
     try {
-        return await db.Users.findAll({
+        const user = await db.Users.findAll({
             where: {
                 UserEmail: {
                     [db.Op.eq]: UserEmail
                 }
             }
         });
+
+        return user.length > 0 ? user[0].dataValues : null;
     }
     catch (error) {
         throw error;
@@ -122,6 +127,7 @@ async function getUserByEmail(UserEmail) {
 
 async function addUser(userParams, res) {
     try {
+        const emailType = UserTypeId === 1 ? EmailTypes.WELCOME_USER : EmailTypes.WELCOME_COMPANY;
         const user = db.Users.build({
             UserId: null,
             UserFirstName: userParams.UserFirstName,
@@ -134,9 +140,34 @@ async function addUser(userParams, res) {
         });
 
         await user.save();
-        return GenericResponse.send(HttpCodes.OK, res, ResponseCodes.UserInserted, TokenService.createToken(user, 2));
+        const Token = TokenService.createToken(user, 2);
+
+        Emailer.initMailer(user, emailType, Token)
+            .then(result => {
+                let response = ResponseCodes.EmailSent;
+                response.emailId = result.messageId;
+
+                return GenericResponse.send(HttpCodes.OK, res, ResponseCodes.UserInserted, Token);
+            })
+            .catch(error => {
+                console.log(error);
+                return GenericResponse.send(HttpCodes.UNAUTHORIZED, res, error, null);
+            });
     }
     catch (error) {
         throw error;
     }
+}
+
+async function updateUser(values, UserEmail) {
+    await db.Users.update(
+        values,
+        {
+            where: {
+                UserEmail: {
+                    [db.Op.eq]: UserEmail
+                }
+            }
+        }
+    );
 }

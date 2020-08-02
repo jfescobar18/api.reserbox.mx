@@ -9,11 +9,14 @@ var routes = function () {
     router.route("/login")
         .post(Auth.login);
 
-    router.route("/confirm-email/:UserEmail/:token")
-        .get(Auth.confirmEmail);
+    router.route("/confirm-email")
+        .post(Auth.confirmEmail);
 
-    router.route("/request-new-password/:UserEmail")
-        .get(Auth.requestNewPassword);
+    router.route("/request-new-password")
+        .post(Auth.requestNewPassword);
+
+    router.route("/update-password")
+        .post(Auth.updatePassword);
 
     return router;
 };

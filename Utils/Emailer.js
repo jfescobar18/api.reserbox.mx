@@ -26,21 +26,21 @@ function composeEmail(user, emailType, token) {
                 emailComposed.text = `${user.UserFirstName} te damos la bienvenida a Reserbox, comienza a reservar ahora`;
                 emailComposed.body = fs.readFileSync(path.join(__dirname, "../Mailing/WelcomeUser.html"), "utf8");
                 emailComposed.body = emailComposed.body.toString();
-                emailComposed.body = emailComposed.body.addConfirmEmailUri(user);
+                emailComposed.body = emailComposed.body.addConfirmEmailURI(user);
                 break;
             case EmailTypes.WELCOME_COMPANY:
                 emailComposed.subject = "¡Bienvenido a Reserbox!";
                 emailComposed.text = `${user.UserFirstName} se bienvenido a Reserbox, configura ahora el sitio de tu negocio`;
                 emailComposed.body = fs.readFileSync(path.join(__dirname, "../Mailing/WelcomeCompany.html")), "utf8";
                 emailComposed.body = emailComposed.body.toString();
-                emailComposed.body = emailComposed.body.addConfirmEmailUri(user);
+                emailComposed.body = emailComposed.body.addConfirmEmailURI(user);
                 break;
             case EmailTypes.EMAIL_CONFIRMATION:
                 emailComposed.subject = "Confirmación de Email";
                 emailComposed.text = `Confirma tu email ahora y comienza a usar Reserbox`;
                 emailComposed.body = fs.readFileSync(path.join(__dirname, "../Mailing/Confirmation.html")), "utf8";
                 emailComposed.body = emailComposed.body.toString();
-                emailComposed.body = emailComposed.body.addConfirmEmailUri(user);
+                emailComposed.body = emailComposed.body.addConfirmEmailURI(user);
                 break;
             case EmailTypes.PASSWORD_RECOVERY:
                 emailComposed.subject = "Recupera tu contraseña";
@@ -58,13 +58,15 @@ function composeEmail(user, emailType, token) {
 }
 
 Object.assign(String.prototype, {
-    addConfirmEmailUri(user, token) {
-        let ConfirmEmailUri = process.env.NODE_ENV === "production" ? process.env.API_URL_PRODUCTION : process.env.API_URL_DEVELOP;
-        ConfirmEmailUri = ConfirmEmailUri + `auth/confirm-email/${user.UserEmail}/${token}`;
-        return this.replace("{ConfirmEmailUri}", ConfirmEmailUri);
+    addConfirmEmailURI(user, token) {
+        let ConfirmEmailURI = process.env.NODE_ENV === "production" ? process.env.WEB_APP_URL_PRODUCTION : process.env.WEB_APP_URL_DEVELOP;
+        ConfirmEmailURI = ConfirmEmailURI + `auth/confirm-email?email=${user.UserEmail}&token=${token}`;
+        return this.replace("{ConfirmEmailURI}", ConfirmEmailURI);
     },
-    addPasswordRecoveryUri(user) {
-
+    addPasswordRecoveryURI(user, token) {
+        let PasswordRecoveryURI = process.env.NODE_ENV === "production" ? process.env.WEB_APP_URL_PRODUCTION : process.env.WEB_APP_URL_DEVELOP;
+        PasswordRecoveryURI = PasswordRecoveryURI + `auth/recovery-password?email=${user.UserEmail}&token=${token}`;
+        return this.replace("{PasswordRecoveryURI}", PasswordRecoveryURI);
     }
 });
 
