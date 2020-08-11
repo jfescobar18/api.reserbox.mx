@@ -128,12 +128,6 @@ CREATE TABLE `CompaniesHasCompanyHighlights` (
     FOREIGN KEY ( `CompanyHighlightId` ) REFERENCES `CompanyHighlights`( `CompanyHighlightId` )
 );
 
-CREATE TABLE `NotAvailableDays` (
-	`NotAvailableDayId` INT NOT NULL AUTO_INCREMENT,
-    `NotAvailableDayDate` DATE NOT NULL,
-    PRIMARY KEY ( `NotAvailableDayId` )
-);
-
 CREATE TABLE `Spaces` (
 	`SpaceId` INT NOT NULL AUTO_INCREMENT,
     `SpaceName` VARCHAR(255) NOT NULL,
@@ -144,6 +138,14 @@ CREATE TABLE `Spaces` (
     `SpaceTimePerBlock` FLOAT NOT NULL,
     `SpacePeoplePerBlock` INT NOT NULL,
     PRIMARY KEY ( `SpaceId` )
+);
+
+CREATE TABLE `NotAvailableDays` (
+	`NotAvailableDayId` INT NOT NULL AUTO_INCREMENT,
+    `SpaceId` INT NOT NULL,
+    `NotAvailableDayDate` DATE NOT NULL,
+    PRIMARY KEY ( `NotAvailableDayId` ),
+    FOREIGN KEY ( `SpaceId` ) REFERENCES `Spaces`( `SpaceId` )
 );
 
 CREATE TABLE `SpaceBlocks` (

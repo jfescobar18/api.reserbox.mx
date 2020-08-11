@@ -8,6 +8,16 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
+    SpaceId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: {
+          tableName: 'spaces',
+        },
+        key: 'SpaceId'
+      }
+    },
     NotAvailableDayDate: {
       type: DataTypes.DATEONLY,
       allowNull: false
