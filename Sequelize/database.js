@@ -33,6 +33,9 @@ db.Sequelize = Sequelize;
 db.instance = instance;
 db.Op = Op;
 
+db.Companies = require("./DataModels/Companies.Model")(instance, Sequelize);
+db.CompaniesHasCompanyHighlights = require("./DataModels/CompaniesHasCompanyHighlights.Model")(instance, Sequelize);
+db.CompaniesHasCompanyPhotos = require("./DataModels/CompaniesHasCompanyPhotos.Model")(instance, Sequelize);
 db.UserTypes = require("./DataModels/UserTypes.model")(instance, Sequelize);
 db.Users = require("./DataModels/Users.model")(instance, Sequelize);
 
