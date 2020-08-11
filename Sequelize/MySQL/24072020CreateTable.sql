@@ -1,6 +1,18 @@
 CREATE DATABASE `reserbox`;
 USE `reserbox`;
 
+CREATE TABLE `UserGenders` (
+	`UserGenderId` INT NOT NULL AUTO_INCREMENT,
+    `UserGenderName` VARCHAR(16) NOT NULL,
+    PRIMARY KEY ( `UserGenderId` )
+);
+
+INSERT INTO `UserGenders` (`UserGenderId`, `UserGenderName`)
+VALUES 
+	(NULL, "Masculino"),
+    (NULL, "Femenino"),
+    (NULL, "Otro");
+
 CREATE TABLE `UserTypes` (
 	`UserTypeId` INT NOT NULL AUTO_INCREMENT,
     `UserTypeName` VARCHAR(8) NOT NULL,
@@ -116,9 +128,16 @@ CREATE TABLE `CompaniesHasCompanyHighlights` (
     FOREIGN KEY ( `CompanyHighlightId` ) REFERENCES `CompanyHighlights`( `CompanyHighlightId` )
 );
 
+CREATE TABLE `NotAvailableDays` (
+	`NotAvailableDayId` INT NOT NULL AUTO_INCREMENT,
+    `NotAvailableDayDate` DATE NOT NULL,
+    PRIMARY KEY ( `NotAvailableDayId` )
+);
+
 CREATE TABLE `Spaces` (
 	`SpaceId` INT NOT NULL AUTO_INCREMENT,
     `SpaceName` VARCHAR(255) NOT NULL,
+    `SpaceStartDate` DATETIME NOT NULL,
     `SpaceDueDate` DATETIME NOT NULL,
     `SpaceStartHour` TIME NOT NULL,
     `SpaceEndHour` TIME NOT NULL,
@@ -133,6 +152,7 @@ CREATE TABLE `SpaceBlocks` (
     `SpaceBlockDate` DATE NOT NULL,
     `SpaceBlockStartHour` TIME NOT NULL,
     `SpaceBlockEndHour` TIME NOT NULL,
+    `SpaceBlockMaxPeople` INT NOT NULL,
     PRIMARY KEY ( `SpaceBlockId` ),
     FOREIGN KEY ( `SpaceId` ) REFERENCES `Spaces`( `SpaceId` )
 );
