@@ -9,6 +9,8 @@ ResponseCodes.ExpiredToken = { name: "Expired Token", code: 6 };
 ResponseCodes.UserNotFound = { name: "User Not Found", code: 7 }
 ResponseCodes.EmailSent = { name: "Email Sent", code: 8 }
 ResponseCodes.PasswordUpdated = { name: "Password Updated", code: 9 }
+ResponseCodes.CompanyCreated = { name: "Company Created", code: 10 }
+ResponseCodes.CompanyNotCreated = { name: "Company Not Created", code: 11 }
 ResponseCodes.Hello = { name: "Hello User", code: 999 };
 
 module.exports = ResponseCodes;

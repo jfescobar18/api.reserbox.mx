@@ -57,6 +57,7 @@ VALUES
 
 CREATE TABLE `Companies`(
 	`CompanyId` INT NOT NULL AUTO_INCREMENT,
+    `UserId` INT NOT NULL,
     `CompanyName` VARCHAR(255) NOT NULL,
     `CompanySlogan` VARCHAR(255) NULL,
     `CompanyLogo` VARCHAR(255) NULL,
@@ -69,7 +70,8 @@ CREATE TABLE `Companies`(
     `CompanyDescription` TEXT NOT NULL,
     `CompanyNotes` VARCHAR(255) NOT NULL,
     PRIMARY KEY ( `CompanyId` ),
-    FOREIGN KEY ( `CompanyRoleId` ) REFERENCES `CompanyRoles`( `CompanyRoleId` )
+    FOREIGN KEY ( `CompanyRoleId` ) REFERENCES `CompanyRoles`( `CompanyRoleId` ),
+    FOREIGN KEY ( `UserId` ) REFERENCES `Users`( `UserId` )
 );
 
 CREATE TABLE `Reviews` (

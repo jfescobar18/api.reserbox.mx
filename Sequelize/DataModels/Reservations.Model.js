@@ -34,8 +34,5 @@ module.exports = function (instance, Sequelize) {
             type: Sequelize.STRING(255),
             allowNull: true
         }
-    }, {
-        sequelize,
-        tableName: 'Reservations'
     });
 };

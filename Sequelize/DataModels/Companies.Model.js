@@ -6,6 +6,16 @@ module.exports = function (instance, Sequelize) {
             allowNull: false,
             primaryKey: true
         },
+        UserId: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: {
+                    tableName: 'Users',
+                },
+                key: 'UserId'
+            }
+        },
         CompanyName: {
             type: Sequelize.STRING(255),
             allowNull: false

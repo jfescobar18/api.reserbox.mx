@@ -23,7 +23,7 @@ module.exports = function (instance, Sequelize) {
         ReviewDate: {
             type: Sequelize.DATE,
             allowNull: false,
-            defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+            defaultValue: instance.literal('CURRENT_TIMESTAMP')
         },
         ReviewScore: {
             type: Sequelize.INTEGER,

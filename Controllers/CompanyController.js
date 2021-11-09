@@ -4,8 +4,8 @@ const Company = require("../Models/CompanyModel");
 const AuthMiddleware = require("../Utils/AuthMiddleware");
 
 var routes = function () {
-    router.route("/hello")
-        .get(AuthMiddleware.ensureAuthenticated, Company.hello);
+    router.route("/create-company")
+        .get(AuthMiddleware.ensureAuthenticated, Company.Create_Company);
 
     return router;
 };

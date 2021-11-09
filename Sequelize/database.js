@@ -50,8 +50,6 @@ db.Spaces = require("./DataModels/Spaces.Model")(instance, Sequelize);
 db.UserGenders = require("./DataModels/UserGenders.Model")(instance, Sequelize);
 db.Users = require("./DataModels/Users.Model")(instance, Sequelize);
 db.UserTypes = require("./DataModels/UserTypes.Model")(instance, Sequelize);
-db.UserTypes = require("./DataModels/UserTypes.model")(instance, Sequelize);
-db.Users = require("./DataModels/Users.model")(instance, Sequelize);
 
 db.instance.sync({ force: false })
     .then(() => {
